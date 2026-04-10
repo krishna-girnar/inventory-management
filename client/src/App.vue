@@ -1,42 +1,157 @@
 <template>
   <div class="app">
-    <header class="top-nav">
-      <div class="nav-container">
-        <div class="logo">
-          <h1>{{ t('nav.companyName') }}</h1>
-          <span class="subtitle">{{ t('nav.subtitle') }}</span>
-        </div>
-        <nav class="nav-tabs">
-          <router-link to="/" :class="{ active: $route.path === '/' }">
-            {{ t('nav.overview') }}
-          </router-link>
-          <router-link to="/inventory" :class="{ active: $route.path === '/inventory' }">
-            {{ t('nav.inventory') }}
-          </router-link>
-          <router-link to="/orders" :class="{ active: $route.path === '/orders' }">
-            {{ t('nav.orders') }}
-          </router-link>
-          <router-link to="/spending" :class="{ active: $route.path === '/spending' }">
-            {{ t('nav.finance') }}
-          </router-link>
-          <router-link to="/demand" :class="{ active: $route.path === '/demand' }">
-            {{ t('nav.demandForecast') }}
-          </router-link>
-          <router-link to="/reports" :class="{ active: $route.path === '/reports' }">
-            Reports
-          </router-link>
-        </nav>
-        <LanguageSwitcher />
-        <ProfileMenu
-          @show-profile-details="showProfileDetails = true"
-          @show-tasks="showTasks = true"
-        />
+    <!-- Left Sidebar -->
+    <aside class="sidebar" :class="{ 'sidebar-collapsed': isCollapsed }">
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <span v-if="!isCollapsed" class="logo-full">
+          <span class="logo-name">{{ t('nav.companyName') }}</span>
+          <span class="logo-sub">{{ t('nav.subtitle') }}</span>
+        </span>
+        <span v-else class="logo-initials">FI</span>
       </div>
-    </header>
-    <FilterBar />
-    <main class="main-content">
-      <router-view />
-    </main>
+
+      <!-- Nav Items -->
+      <nav class="sidebar-nav">
+        <router-link
+          to="/"
+          class="sidebar-link"
+          :class="{ active: $route.path === '/' }"
+          :title="isCollapsed ? t('nav.overview') : undefined"
+        >
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          <span v-if="!isCollapsed" class="nav-label">{{ t('nav.overview') }}</span>
+        </router-link>
+
+        <router-link
+          to="/inventory"
+          class="sidebar-link"
+          :class="{ active: $route.path === '/inventory' }"
+          :title="isCollapsed ? t('nav.inventory') : undefined"
+        >
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+            <line x1="12" y1="22.08" x2="12" y2="12"/>
+          </svg>
+          <span v-if="!isCollapsed" class="nav-label">{{ t('nav.inventory') }}</span>
+        </router-link>
+
+        <router-link
+          to="/orders"
+          class="sidebar-link"
+          :class="{ active: $route.path === '/orders' }"
+          :title="isCollapsed ? t('nav.orders') : undefined"
+        >
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+            <rect x="9" y="3" width="6" height="4" rx="1" ry="1"/>
+            <line x1="9" y1="12" x2="15" y2="12"/>
+            <line x1="9" y1="16" x2="13" y2="16"/>
+          </svg>
+          <span v-if="!isCollapsed" class="nav-label">{{ t('nav.orders') }}</span>
+        </router-link>
+
+        <router-link
+          to="/spending"
+          class="sidebar-link"
+          :class="{ active: $route.path === '/spending' }"
+          :title="isCollapsed ? t('nav.finance') : undefined"
+        >
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+            <polyline points="17 6 23 6 23 12"/>
+          </svg>
+          <span v-if="!isCollapsed" class="nav-label">{{ t('nav.finance') }}</span>
+        </router-link>
+
+        <router-link
+          to="/demand"
+          class="sidebar-link"
+          :class="{ active: $route.path === '/demand' }"
+          :title="isCollapsed ? t('nav.demandForecast') : undefined"
+        >
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          <span v-if="!isCollapsed" class="nav-label">{{ t('nav.demandForecast') }}</span>
+        </router-link>
+
+        <router-link
+          to="/reports"
+          class="sidebar-link"
+          :class="{ active: $route.path === '/reports' }"
+          :title="isCollapsed ? 'Reports' : undefined"
+        >
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          <span v-if="!isCollapsed" class="nav-label">Reports</span>
+        </router-link>
+
+        <router-link
+          to="/restocking"
+          class="sidebar-link"
+          :class="{ active: $route.path === '/restocking' }"
+          :title="isCollapsed ? 'Restocking' : undefined"
+        >
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"/>
+            <polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+          </svg>
+          <span v-if="!isCollapsed" class="nav-label">Restocking</span>
+        </router-link>
+      </nav>
+
+      <!-- Sidebar Footer: LanguageSwitcher + ProfileMenu + Collapse Toggle -->
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-items">
+          <LanguageSwitcher :collapsed="isCollapsed" />
+          <ProfileMenu
+            :collapsed="isCollapsed"
+            @show-profile-details="showProfileDetails = true"
+            @show-tasks="showTasks = true"
+          />
+        </div>
+
+        <button
+          class="collapse-toggle"
+          @click="toggleCollapse"
+          :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+        >
+          <svg
+            class="collapse-icon"
+            :class="{ 'collapse-icon-flipped': isCollapsed }"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Right Panel: FilterBar + main content -->
+    <div class="right-panel">
+      <FilterBar />
+      <main class="main-content">
+        <router-view />
+      </main>
+    </div>
 
     <ProfileDetailsModal
       :is-open="showProfileDetails"
@@ -55,7 +170,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { api } from './api'
 import { useAuth } from './composables/useAuth'
 import { useI18n } from './composables/useI18n'
@@ -64,6 +179,9 @@ import ProfileMenu from './components/ProfileMenu.vue'
 import ProfileDetailsModal from './components/ProfileDetailsModal.vue'
 import TasksModal from './components/TasksModal.vue'
 import LanguageSwitcher from './components/LanguageSwitcher.vue'
+
+const SIDEBAR_STORAGE_KEY = 'sidebar-collapsed'
+const MOBILE_BREAKPOINT = 768
 
 export default {
   name: 'App',
@@ -81,6 +199,22 @@ export default {
     const showTasks = ref(false)
     const apiTasks = ref([])
 
+    // Sidebar collapsed state — seeded from localStorage
+    const isCollapsed = ref(
+      localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true'
+    )
+
+    const toggleCollapse = () => {
+      isCollapsed.value = !isCollapsed.value
+      localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isCollapsed.value))
+    }
+
+    const handleResize = () => {
+      if (window.innerWidth < MOBILE_BREAKPOINT) {
+        isCollapsed.value = true
+      }
+    }
+
     // Merge mock tasks from currentUser with API tasks
     const tasks = computed(() => {
       return [...currentUser.value.tasks, ...apiTasks.value]
@@ -97,7 +231,6 @@ export default {
     const addTask = async (taskData) => {
       try {
         const newTask = await api.createTask(taskData)
-        // Add new task to the beginning of the array
         apiTasks.value.unshift(newTask)
       } catch (err) {
         console.error('Failed to add task:', err)
@@ -106,17 +239,13 @@ export default {
 
     const deleteTask = async (taskId) => {
       try {
-        // Check if it's a mock task (from currentUser)
         const isMockTask = currentUser.value.tasks.some(t => t.id === taskId)
-
         if (isMockTask) {
-          // Remove from mock tasks
           const index = currentUser.value.tasks.findIndex(t => t.id === taskId)
           if (index !== -1) {
             currentUser.value.tasks.splice(index, 1)
           }
         } else {
-          // Remove from API tasks
           await api.deleteTask(taskId)
           apiTasks.value = apiTasks.value.filter(t => t.id !== taskId)
         }
@@ -127,14 +256,10 @@ export default {
 
     const toggleTask = async (taskId) => {
       try {
-        // Check if it's a mock task (from currentUser)
         const mockTask = currentUser.value.tasks.find(t => t.id === taskId)
-
         if (mockTask) {
-          // Toggle mock task status
           mockTask.status = mockTask.status === 'pending' ? 'completed' : 'pending'
         } else {
-          // Toggle API task
           const updatedTask = await api.toggleTask(taskId)
           const index = apiTasks.value.findIndex(t => t.id === taskId)
           if (index !== -1) {
@@ -146,10 +271,23 @@ export default {
       }
     }
 
-    onMounted(loadTasks)
+    onMounted(() => {
+      loadTasks()
+      // Auto-collapse on small screens at startup
+      if (window.innerWidth < MOBILE_BREAKPOINT) {
+        isCollapsed.value = true
+      }
+      window.addEventListener('resize', handleResize)
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleResize)
+    })
 
     return {
       t,
+      isCollapsed,
+      toggleCollapse,
       showProfileDetails,
       showTasks,
       tasks,
@@ -176,103 +314,194 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ─── App shell ─────────────────────────────────────────────────── */
+
 .app {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   min-height: 100vh;
 }
 
-.top-nav {
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+/* ─── Sidebar ────────────────────────────────────────────────────── */
+
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: #0f172a;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   position: sticky;
   top: 0;
+  flex-shrink: 0;
+  transition: width 0.25s ease, min-width 0.25s ease;
+  overflow: hidden;
   z-index: 100;
 }
 
-.nav-container {
-  max-width: 1600px;
-  margin: 0 auto;
+.sidebar-collapsed {
+  width: 64px;
+  min-width: 64px;
+}
+
+/* Logo */
+.sidebar-logo {
   display: flex;
   align-items: center;
-  padding: 0 2rem;
-  height: 70px;
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid #1e293b;
+  min-height: 64px;
+  flex-shrink: 0;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-.nav-container > .nav-tabs {
-  margin-left: auto;
-  margin-right: 1rem;
-}
-
-.nav-container > .language-switcher {
-  margin-right: 1rem;
-}
-
-.logo {
+.logo-full {
   display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 0.2rem;
+  overflow: hidden;
 }
 
-.logo h1 {
-  font-size: 1.375rem;
+.logo-name {
+  font-size: 1rem;
   font-weight: 700;
-  color: #0f172a;
-  letter-spacing: -0.025em;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
-.subtitle {
-  font-size: 0.813rem;
+.logo-sub {
+  font-size: 0.7rem;
   color: #64748b;
-  font-weight: 400;
-  padding-left: 0.75rem;
-  border-left: 1px solid #e2e8f0;
+  white-space: nowrap;
 }
 
-.nav-tabs {
+.logo-initials {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  width: 100%;
+  text-align: center;
+  display: block;
+}
+
+/* Nav */
+.sidebar-nav {
   display: flex;
-  gap: 0.25rem;
+  flex-direction: column;
+  padding: 0.75rem 0;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.nav-tabs a {
-  padding: 0.625rem 1.25rem;
-  color: #64748b;
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  color: #94a3b8;
   text-decoration: none;
+  font-size: 0.875rem;
   font-weight: 500;
-  font-size: 0.938rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  position: relative;
+  transition: background 0.15s ease, color 0.15s ease;
+  border-left: 3px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-.nav-tabs a:hover {
-  color: #0f172a;
-  background: #f1f5f9;
+.sidebar-link:hover {
+  background: #1e293b;
+  color: #e2e8f0;
 }
 
-.nav-tabs a.active {
-  color: #2563eb;
-  background: #eff6ff;
+.sidebar-link.active {
+  background: #1e293b;
+  color: #ffffff;
+  border-left-color: #3b82f6;
 }
 
-.nav-tabs a.active::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #2563eb;
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
+
+/* In collapsed mode, center the icon by compensating for the 3px border */
+.sidebar-collapsed .sidebar-link {
+  justify-content: center;
+  padding-left: calc(0.5rem - 3px);
+  padding-right: 0.5rem;
+}
+
+.nav-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Footer */
+.sidebar-footer {
+  border-top: 1px solid #1e293b;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebar-footer-items {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0;
+}
+
+.collapse-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.625rem;
+  background: none;
+  border: none;
+  border-top: 1px solid #1e293b;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.collapse-toggle:hover {
+  background: #1e293b;
+  color: #94a3b8;
+}
+
+.collapse-icon {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.25s ease;
+}
+
+.collapse-icon-flipped {
+  transform: rotate(180deg);
+}
+
+/* ─── Right panel ────────────────────────────────────────────────── */
+
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  min-width: 0;
+}
+
+/* ─── Main content ───────────────────────────────────────────────── */
 
 .main-content {
   flex: 1;
-  max-width: 1600px;
-  width: 100%;
-  margin: 0 auto;
   padding: 1.5rem 2rem;
 }
+
+/* ─── Shared page/card styles ────────────────────────────────────── */
 
 .page-header {
   margin-bottom: 1.5rem;
